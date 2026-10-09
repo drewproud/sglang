@@ -237,7 +237,10 @@ class TestIndependentStageConstruction(CustomTestCase):
                         following.kind is StageKind.ATTENTION,
                     )
                     incoming = consumer.plan.edges[variant].incoming.produced
-                    self.assertEqual(incoming.group, output.group)
+                    self.assertEqual(
+                        incoming.group,
+                        output.group if output.always_partial else None,
+                    )
 
 
 if __name__ == "__main__":
