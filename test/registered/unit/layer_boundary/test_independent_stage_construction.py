@@ -30,7 +30,7 @@ register_cpu_ci(est_time=5, suite="base-a-test-cpu")
 def next_layer():
     """The next layer's attention, which a stack that does not end the
     model hands its output to."""
-    append_stages((declare_attn(), fixture.Norm()))
+    return (declare_attn(),)
 
 
 class TestIndependentStageConstruction(CustomTestCase):
@@ -168,7 +168,7 @@ class TestIndependentStageConstruction(CustomTestCase):
                     )[1]
 
                 def previous_layer():
-                    append_stages((declare_ffn(sparse=True), fixture.Norm()))
+                    return (declare_ffn(sparse=True),)
 
                 neighbours = dict(
                     previous_layers=[previous_layer], next_layers=[next_layer]
