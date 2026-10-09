@@ -17,6 +17,7 @@ from sglang.srt.layers.layer_boundary import (
     layer_stack,
 )
 from sglang.srt.layers.layer_boundary.contracts import BatchVariant
+from sglang.srt.layers.layer_boundary.facts import facts_of
 from sglang.srt.layers.layer_boundary.residual import batch
 from sglang.srt.model_executor.forward_batch_info import ForwardMode
 from sglang.test.boundary_fixtures import build_stages
@@ -184,9 +185,12 @@ class TestIndependentStageConstruction(CustomTestCase):
                     )
                 # The branch leaves the stage it reads from as it was.
                 self.assertEqual(source.plan.edges, alone.plan.edges)
-                self.assertEqual(first.declaration.prepared_from, source.declaration)
-                self.assertIs(attn.declaration.previous, first.declaration)
-                self.assertIs(last.declaration.previous, attn.declaration)
+                # Each records the stage before it by what binding reads of it.
+                self.assertEqual(
+                    first.declaration.prepared_from, facts_of(source.declaration)
+                )
+                self.assertEqual(attn.declaration.previous, facts_of(first.declaration))
+                self.assertEqual(last.declaration.previous, facts_of(attn.declaration))
                 for v, edge in first.plan.edges.items():
                     source_input = source.plan.edges[v].incoming
                     self.assertEqual(
